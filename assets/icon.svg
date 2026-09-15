@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title">
+  <title id="title">ADD NOW app icon</title>
+  <rect width="512" height="512" rx="116" fill="#0a0a0b"/>
+  <circle cx="256" cy="256" r="166" fill="#d9ff4f"/>
+  <path d="M211 165c0-12 13-19 23-12l145 92c9 6 9 18 0 24l-145 92c-10 7-23 0-23-12V165Z" fill="#0a0a0b"/>
+  <circle cx="116" cy="116" r="25" fill="#ff9d7a"/>
+</svg>
