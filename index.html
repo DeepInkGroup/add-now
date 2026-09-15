@@ -27,6 +27,9 @@
         <span>ADD NOW</span>
       </a>
       <div class="top-actions">
+        <button class="icon-button" id="apiSettingsButton" type="button" aria-label="YouTube search settings" title="YouTube search settings">
+          <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8m-2 2 2 2m-5 1 2 2"/></svg>
+        </button>
         <button class="icon-button" id="themeButton" type="button" aria-label="Change color mood" title="Change color mood">
           <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.64 5.64l1.42 1.42M16.94 16.94l1.42 1.42M18.36 5.64l-1.42 1.42M7.06 16.94l-1.42 1.42"/><circle cx="12" cy="12" r="4"/></svg>
         </button>
@@ -44,7 +47,12 @@
         <h1 id="heroTitle">Paste. Press play.<br /><em>Breathe.</em></h1>
         <p class="hero-copy">One clean space for YouTube, Vimeo, and direct video or audio links. No feeds to fall into.</p>
 
-        <form class="add-form" id="addForm" novalidate>
+        <div class="input-modes" role="tablist" aria-label="Choose how to find media">
+          <button class="active" id="linkModeButton" type="button" role="tab" aria-selected="true" aria-controls="addForm">Paste a link</button>
+          <button id="creatorModeButton" type="button" role="tab" aria-selected="false" aria-controls="creatorForm">Find a creator <span>New</span></button>
+        </div>
+
+        <form class="add-form" id="addForm" role="tabpanel" aria-labelledby="linkModeButton" novalidate>
           <label class="url-field" for="mediaUrl">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l2-2a5 5 0 0 0-7.07-7.07l-1.15 1.15M14 11a5 5 0 0 0-7.54-.54l-2 2a5 5 0 0 0 7.07 7.07l1.14-1.14"/></svg>
             <span class="sr-only">Video or audio URL</span>
@@ -57,10 +65,23 @@
           </button>
         </form>
 
+        <form class="add-form creator-form" id="creatorForm" role="tabpanel" aria-labelledby="creatorModeButton" hidden novalidate>
+          <label class="url-field" for="creatorQuery">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+            <span class="sr-only">YouTube creator name or handle</span>
+            <input id="creatorQuery" name="creator" type="search" autocomplete="off" placeholder="Search a YouTube name or @handle…" required />
+          </label>
+          <button class="add-button" type="submit">
+            <span>Find creator</span>
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-5-5 5 5-5 5"/></svg>
+          </button>
+        </form>
+
         <div class="form-footer">
           <div class="supported" aria-label="Supported services">
-            <span>YouTube</span><i></i><span>Vimeo</span><i></i><span>MP4</span><i></i><span>WebM</span><i></i><span>Audio</span>
+            <span>YouTube</span><i></i><span>Playlists</span><i></i><span>Vimeo</span><i></i><span>Direct media</span>
           </div>
+          <span class="link-insight" id="linkInsight" hidden></span>
           <label class="shield-toggle">
             <input id="shieldToggle" type="checkbox" checked />
             <span class="toggle-track"><span></span></span>
@@ -69,6 +90,31 @@
           </label>
         </div>
         <p class="message" id="formMessage" role="status" aria-live="polite"></p>
+      </section>
+
+      <section class="creator-results" id="creatorResults" aria-labelledby="creatorResultsTitle" hidden>
+        <div class="section-heading">
+          <div>
+            <p class="section-kicker">Creator radar</p>
+            <h2 id="creatorResultsTitle">Choose the right channel</h2>
+          </div>
+          <button class="text-button" id="closeCreatorResults" type="button">Close results</button>
+        </div>
+        <div class="creator-status" id="creatorStatus" role="status" aria-live="polite"></div>
+        <div class="channel-grid" id="channelGrid"></div>
+        <div class="selected-channel" id="selectedChannel" hidden>
+          <div class="channel-hero">
+            <img id="channelAvatar" alt="" />
+            <div>
+              <span class="verified-label">Selected creator</span>
+              <h3 id="channelTitle">Channel</h3>
+              <p id="channelStats">Latest public uploads</p>
+            </div>
+            <a id="channelLink" href="#" target="_blank" rel="noopener noreferrer">Open channel ↗</a>
+          </div>
+          <div class="video-results" id="videoResults"></div>
+          <button class="load-more-button" id="loadMoreButton" type="button" hidden>Load more videos</button>
+        </div>
       </section>
 
       <section class="workspace" id="workspace" aria-labelledby="workspaceTitle">
@@ -93,12 +139,21 @@
             <div class="player-stage" id="playerStage" hidden></div>
             <div class="player-meta" id="playerMeta" hidden>
               <div>
-                <span class="source-badge" id="sourceBadge">MEDIA</span>
+                <div class="media-badges"><span class="source-badge" id="sourceBadge">MEDIA</span><span class="quality-badge" id="qualityBadge">AUTO</span></div>
                 <h3 id="mediaTitle">Untitled media</h3>
               </div>
-              <button class="icon-button" id="shareButton" type="button" aria-label="Share current media">
-                <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 10.9 7.4-4.7M8.3 13.1l7.4 4.7"/></svg>
-              </button>
+              <div class="player-actions">
+                <div class="direct-tools" id="directTools" hidden>
+                  <button type="button" data-speed="0.75">.75×</button>
+                  <button class="active" type="button" data-speed="1">1×</button>
+                  <button type="button" data-speed="1.25">1.25×</button>
+                  <button type="button" data-speed="1.5">1.5×</button>
+                  <button id="pipButton" type="button" aria-label="Picture in picture">PiP</button>
+                </div>
+                <button class="icon-button" id="shareButton" type="button" aria-label="Share current media">
+                  <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="m8.3 10.9 7.4-4.7M8.3 13.1l7.4 4.7"/></svg>
+                </button>
+              </div>
             </div>
           </article>
 
@@ -148,6 +203,7 @@
 
     <nav class="mobile-nav" aria-label="Primary navigation">
       <a class="active" href="#heroTitle"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m3 11 9-8 9 8v9H3v-9Z"/><path d="M9 20v-6h6v6"/></svg><span>Home</span></a>
+      <a href="#creatorResults" id="mobileDiscover"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg><span>Discover</span></a>
       <a href="#workspace"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m9 7 8 5-8 5V7Z"/><circle cx="12" cy="12" r="10"/></svg><span>Watch</span></a>
       <button id="mobileInstallButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0 4-4m-4 4-4-4M5 20h14"/></svg><span>Install</span></button>
       <button id="mobileAboutButton" type="button"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></svg><span>About</span></button>
@@ -167,6 +223,23 @@
       <p>ADD NOW stores your queue only on this device and uses YouTube’s privacy-enhanced embed mode. Direct media links play without extra ad layers from this app.</p>
       <div class="notice"><strong>A useful limitation</strong><span>Web apps cannot remove ads injected inside YouTube or Vimeo players. ADD NOW does not claim to bypass those services or their terms.</span></div>
       <button class="dialog-action" id="dialogAction" type="button">Got it</button>
+    </dialog>
+
+    <dialog id="apiDialog">
+      <button class="dialog-close" id="apiDialogClose" type="button" aria-label="Close">×</button>
+      <div class="dialog-mark key-mark"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="m11 12 8-8m-2 2 2 2m-5 1 2 2"/></svg></div>
+      <p class="section-kicker">Creator search setup</p>
+      <h2>Connect YouTube search.</h2>
+      <p>Enter a YouTube Data API v3 key to search channel names and browse their public uploads. The key stays in this browser’s local storage and is sent only to Google’s API.</p>
+      <label class="key-field" for="youtubeApiKey">
+        <span>YouTube API key</span>
+        <input id="youtubeApiKey" type="password" autocomplete="off" spellcheck="false" placeholder="AIza…" />
+      </label>
+      <p class="key-tip">For safety, restrict the key to YouTube Data API v3 and this site’s HTTP referrer. <a href="https://console.cloud.google.com/apis/library/youtube.googleapis.com" target="_blank" rel="noopener noreferrer">Open Google Cloud Console ↗</a></p>
+      <div class="dialog-buttons">
+        <button class="secondary-action" id="removeApiKey" type="button">Remove key</button>
+        <button class="dialog-action" id="saveApiKey" type="button">Save on this device</button>
+      </div>
     </dialog>
 
     <noscript><div class="noscript">ADD NOW needs JavaScript to recognize and play your links.</div></noscript>

@@ -6,3 +6,5 @@ Thumbs.db
 .browser-*/
 *-preview.png
 interaction-*.png
+.browser-check/
+test-preview.png

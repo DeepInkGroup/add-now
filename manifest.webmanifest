@@ -2,7 +2,7 @@
   "id": "./",
   "name": "ADD NOW — Quiet Media Player",
   "short_name": "ADD NOW",
-  "description": "A focused, privacy-minded player for YouTube, Vimeo, Spotify, SoundCloud, and direct media links.",
+  "description": "A focused media PWA with YouTube creator discovery, playlists, quality insight, and private local queues.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

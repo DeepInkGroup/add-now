@@ -1,4 +1,4 @@
-const CACHE_NAME = "add-now-shell-v1";
+const CACHE_NAME = "add-now-shell-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
